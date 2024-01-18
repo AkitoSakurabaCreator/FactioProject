@@ -1,0 +1,79 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+<div class="title_box">
+    <h1>カスタマイズマイリスト</h1>
+    <p>自分でカスタマイズしたアイテムが表示されます。</p>
+</div>
+<div class="wrapper">
+    <div class="SELECTION">
+        <div class="fashion_mylist">
+            {% for item in fashion_item_data %}
+                <div id="fashion_box">
+                    <div id="kisekae-area">
+                        <img class="base-img" src="{% static 'images/tenasi.png' %}" />
+                        {% for test in fashion_list_data %}
+                            {% if test.FSL_id == item.slug %}
+                                {% for est in item_data %}
+                                    {% if est.slug == test.using_item %}
+                                        <img class="{{ est.category }}" src="{{ est.image.url }}">
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="fashion_detail">
+                        <h1>{{ item.title }}</h1>
+                        <h2>{{ item.category }}</h2>
+                        <h2>{{ item.clothing }}</h2>
+                        <h2>{{ item.season }}</h2>
+                        
+                        <p>性別: {{ item.sex }}</p>
+                        <p>名前: {{ item.user.user_screen_id }}</p>
+                        <p>{{ item.description }}</p>
+                    </div>
+                    <div class="select_box">
+                        <a class="btn-info" href="{% url 'fashion_view' slug=item.slug %}">詳細を見る。</a>
+                        <a class="btn-warning" href="{% url 'fashion_field_edit' item.slug %}">項目を修正する。</a>
+                        <a class="btn-primary" href="{% url 'fashion_customize_edit' item.slug %}">カスタマイズを修正する。</a>
+                        <a class="btn-danger" href="{% url 'fashion_customize_delete' item.slug %}">削除する。</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="paginator">
+        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+            {% if fashion_item_data.has_previous %}
+            <a class="pagination-previous" href="?p={{ fashion_item_data.previous_page_number }}">前のページへ</a>
+            {% endif %}
+            {% if fashion_item_data.has_next %}
+            <a class="pagination-next" href="?p={{ fashion_item_data.next_page_number }}">次のページへ</a>
+            {% endif %}
+            <ul class="pagination-list">
+                {% if fashion_item_data.has_previous %}
+                {% if fashion_item_data.previous_page_number != 1 %}
+                <li><a class="pagination-link" href="?p=1">1</a></li>
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                {% endif %}
+                <li><a class="pagination-link"
+                        href="?p={{ fashion_item_data.previous_page_number }}">{{ fashion_item_data.previous_page_number }}</a></li>
+                {% endif %}
+                <li><a class="pagination-link is-current" href="?p={{ fashion_item_data.number }}">{{ fashion_item_data.number }}</a></li>
+                {% if fashion_item_data.has_next %}
+                <li><a class="pagination-link"
+                        href="?p={{ fashion_item_data.next_page_number }}">{{ fashion_item_data.next_page_number }}</a></li>
+                {% if fashion_item_data.next_page_number != fashion_item_data.paginator.num_pages %}
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                <li><a class="pagination-link"
+                        href="?p={{ fashion_item_data.paginator.num_pages }}">{{ fashion_item_data.paginator.num_pages }}</a></li>
+                {% endif %}
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+

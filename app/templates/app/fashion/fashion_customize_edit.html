@@ -1,0 +1,236 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% comment %} <!DOCTYPE html>
+<html lang="ja"> {% endcomment %}
+    {% block content %}
+    <div class="wrapper">
+      <div class="title_box">
+        <h1>ファッションカスタマイズ</h1>
+        <p>再編集</p>
+      </div>
+      <div class="SELECTION">
+        <div class="stage">
+
+          <div class="fashion_design">
+            <div id="kisekae-area">
+              <img class="base-img" src="{% static 'images/tenasi.png' %}" />
+              {% for item in fashion_list_data %}
+                {% for img in item_data %}
+                  {% if img.slug == item.using_item %}
+                    {% comment %} <p>{{ img.image.url }} {% endcomment %}
+                    {% comment %} <img class="base-img" src=""{{ img.image.url }}"" alt="{{ img.category }}" /> {% endcomment %}
+                    {% comment %} <img src="/media/products_images/03.png" id="manekin" class="Tops"> {% endcomment %}
+                    <img src="{{ img.image.url }}" alt="{{ item.slug }}" id="manekin" class="{{ img.category }}" />
+                  {% endif %}
+                {% endfor %}
+              {% endfor %}
+            </div>
+            <div class="control-area">
+              <div class="control-box">
+                <form method="GET" action="{% url 'fashion_check' %}">
+                  {% csrf_token %}
+                  <input type="hidden" id="FashionItemData" name="FashionItemData">
+                  <input type="submit" class="btn btn-primary" value="保存する / 共有する">
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="fashion" id="fashion_items_box">
+            <div class="nanka">
+              <h1>カスタマイズ</h1>
+            </div>
+
+            <div class="items_tab">
+              <input id="tops" type="radio" name="tab_item" checked />
+              <label class="tab_item" for="tops">トップス</label>
+
+              <input id="pants" type="radio" name="tab_item" />
+              <label class="tab_item" for="pants">ズボン</label>
+
+              <input id="skirt" type="radio" name="tab_item" />
+              <label class="tab_item" for="skirt">スカート</label>
+
+              <input id="outer" type="radio" name="tab_item" />
+              <label class="tab_item" for="outer">アウター</label>
+
+              <input id="cap" type="radio" name="tab_item" />
+              <label class="tab_item" for="cap">帽子</label>
+
+              <input id="onepeace" type="radio" name="tab_item" />
+              <label class="tab_item" for="onepeace">ワンピース</label>
+
+              <div class="tab_content" id="tops_content">
+                <div class="tab_content_description">
+                  <div id="select-img-area">
+                    <ul>
+                      {% for item in item_data %} 
+                        {% if item.category == 'Tops' and item.slug in brand_tag %}
+                          <li class="select-img selected">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% elif item.category == 'Tops'%}
+                          <li class="select-img">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab_content" id="pants_content">
+                <div class="tab_content_description">
+                  <div id="select-img-area">
+                    <ul>
+                      {% for item in item_data %} 
+                        {% if item.category == 'Pants' and item.slug in brand_tag %}
+                          <li class="select-img selected">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% elif item.category == 'Pants'%}
+                          <li class="select-img">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab_content" id="skirt_content">
+                <div class="tab_content_description">
+                  <div id="select-img-area">
+                    <ul>
+                      {% for item in item_data %} 
+                        {% if item.category == 'Skirt' and item.slug in brand_tag %}
+                          <li class="select-img selected">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% elif item.category == 'Skirt'%}
+                          <li class="select-img">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab_content" id="outer_content">
+                <div class="tab_content_description">
+                  <div id="select-img-area">
+                    <ul>
+                      {% for item in item_data %} 
+                        {% if item.category == 'Outer' and item.slug in brand_tag %}
+                          <li class="select-img selected">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% elif item.category == 'Outer'%}
+                          <li class="select-img">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab_content" id="cap_content">
+                <div class="tab_content_description">
+                  <div id="select-img-area">
+                    <ul>
+                      {% for item in item_data %} 
+                        {% if item.category == 'Cap' and item.slug in brand_tag %}
+                          <li class="select-img selected">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% elif item.category == 'Cap'%}
+                          <li class="select-img">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab_content" id="onepeace_content">
+                <div class="tab_content_description">
+                  <div id="select-img-area">
+                    <ul>
+                      {% for item in item_data %} 
+                        {% if item.category == 'Onepeace' and item.slug in brand_tag %}
+                          <li class="select-img selected">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% elif item.category == 'Onepeace'%}
+                          <li class="select-img">
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                            <img class="{{ item.category }}" src="{{ item.image.url }}" alt="{{ item.slug }}" />
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+        </div>
+    </div>
+      <script>
+        jQuery(function ($) {
+          // 画像エリアクリックイベント
+          $(".select-img").on("click", function () {
+            $(this).toggleClass("selected");
+            change_img();
+          });
+
+          // 画像変更処理
+          function change_img() {
+            var s_html = "";
+            var test = "";
+            var count = 0;
+    
+            $(".select-img.selected").each(function (index, element) {
+              s_html +=
+                '<img src="' +
+                $(element).find("img").eq(1).attr("src") +
+                
+                '" id="manekin" class="' + $(element).find("img").eq(1).attr("class") + '">';
+              if ($(element).find("img").eq(1).attr("alt") != "") {
+                test += $(element).find("img").eq(1).attr("alt") + ",";
+              }
+              document.querySelector("#FashionItemData").value = test;
+            });
+            // 要素削除
+            $("#kisekae-area img").each(function (index, element) {
+              if (!$(this).hasClass("base-img")) {
+                $(this).remove();
+                test = test.replace($(this).attr("alt"), "");
+                document.querySelector("#FashionItemData").value = test;
+              }
+            });
+            // 要素追加
+            $("#kisekae-area").append(s_html);
+          }
+        });
+      </script>
+    </div>
+    {% endblock %}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+</head>
+<body>
+{% comment %} {% for value in data %}
+    {% if value.slug in test %}
+    <img src="{{ value.image.url }}" alt="{{ value.slug }}">
+    {% endif %}
+{% endfor %} {% endcomment %}
+
+
+{% for value in data %}
+    {% for result in tests %}
+        {% if value.slug == result %}
+            <img id="{{ value.category }}" src="{{ value.image.url }}" alt="{{ value.slug }}">
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+</body>
+</html>

@@ -1,0 +1,185 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Factio</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="http://code.jquery.com/jquery.min.js"></script>
+
+
+  <style>
+    #kisekae-area {
+      border: solid;
+      margin-bottom: 10px;
+      text-align: center;
+      position: relative;
+    }
+
+    #select-img-area {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+    }
+
+    .select-img {
+      border: solid 1px #000;
+      text-align: center;
+      padding: 10px;
+      width: 20%;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    .select-img img {
+      width: 100px;
+      display: none;
+    }
+
+    .select-img img:first-child {
+      display: inline-block;
+    }
+
+    .select-img:hover {
+      background-color: #e6e6e6;
+      opacity: 0.6;
+    }
+
+    .select-img.selected {
+      background-color: #e6e6e6;
+    }
+
+    #kisekae-area {
+      width: 20%;
+      text-align: center;
+    }
+
+    #kisekae-area img {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      -webkit-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+    }
+
+    #kisekae-area img.base-img {
+      width: 400px;
+      position: relative !important;
+      top: auto;
+      left: auto;
+      transform: none;
+      -webkit-transform: none;
+      -ms-transform: none;
+    }
+
+
+    .fashion_area {
+      width: 100%;
+      display: flex;
+        justify-content: space-around;
+    }
+
+    .fashionlist {
+      z-index: 10;
+      float: right;
+      width: 50%;
+
+    }
+
+    .fashionlist ul {
+      list-style: none;
+    }
+
+    .fashionlist ul li img {
+      width: 20%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="fashion_area">
+    <div class="center">
+      <div id="kisekae-area">
+        <img class="base-img" src="{% static 'images/tenasi.png' %}" />
+      </div>
+    </div>
+
+    <div id="select-img-area">
+      {% for item in item_data %}
+        {% if item.title == 'ズボン'%}
+        <p class="select-img">
+          <img src="{{ item.image.url }}" />
+          <img src="{{ item.image.url }}" />
+        </p>
+        {% endif %}
+        {% endfor %}
+        
+      <p class="select-img">
+        <img src="https://incloop.com/wp-content/uploads/2020/07/item1-cutout.png" />
+        <img src="https://incloop.com/wp-content/uploads/2020/07/item1.png" />
+      </p>
+
+    {% comment %} 
+      <p class="select-img">
+        <img src="https://incloop.com/wp-content/uploads/2020/07/item1-cutout.png" />
+        <img src="https://incloop.com/wp-content/uploads/2020/07/item1.png" />
+      </p>
+      <p class="select-img">
+        <img src="https://incloop.com/wp-content/uploads/2020/07/item2-cutout.png" />
+        <img src="https://incloop.com/wp-content/uploads/2020/07/item2.png" />
+      </p>
+      <p class="select-img">
+        <img src="https://incloop.com/wp-content/uploads/2020/07/item3-cutout.png" />
+        <img src="https://incloop.com/wp-content/uploads/2020/07/item3.png" />
+      </p>
+      <p class="select-img">
+        <img src="https://incloop.com/wp-content/uploads/2020/07/item4-cutout.png" />
+        <img src="https://incloop.com/wp-content/uploads/2020/07/item4.png" />
+      </p>
+      {% endcomment %}
+    </div>
+    {% comment %} 
+    <div class="fashionlist">
+      <ul>
+        {% for item in item_data %}
+        {% if item.title == 'ズボン'%}
+        <li><img src="{{ item.image.url }}"></li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% endcomment %}
+  </div>
+</body>
+<script>
+  jQuery(function ($) {
+        // 画像エリアクリックイベント
+        $(".select-img").on("click", function () {
+          $(this).toggleClass("selected");
+          change_img();
+        });
+
+        // 画像変更処理
+        function change_img() {
+          var s_html = "";
+          var i_z_index = 1;
+          $(".select-img.selected").each(function (index, element) {
+            s_html +=
+              '<img src="' +
+              $(element).find(" img").eq(1).attr("src") + '" style="z-index:' + i_z_index + '">';
+            i_z_index++;
+          }); //
+          要素削除 $("#kisekae-area img").each(function (index, element) {
+            if (!$(this).hasClass("base-img")) {
+              $(this).remove();
+            }
+          }); // 要素追加 $("#kisekae-area").append(s_html); } }); 
+</script>
+
+</html>
