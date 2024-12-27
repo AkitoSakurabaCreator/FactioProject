@@ -1,0 +1,62 @@
+{% extends "app/base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="card card-auth my-5 mx-auto">
+        <div class="card-body">
+            <h5 class="card-title text-center">サインアップ</h5>
+            {% comment %} {% for field in form.errors %}
+                <p>{{ field }}</p>
+            {% endfor %} {% endcomment %}
+            {% comment %} <ul>
+                {% for error in form.errors %}
+                <li>
+                    {{ error }}
+                </li>
+                {% endfor %}
+            </ul> {% endcomment %}
+            {% comment %} {% if form.title.errors %}
+            <ul class="alert alert-danger list-unstyled">
+                <li style="list-style-type: none;">
+                    <ul class="alert alert-danger list-unstyled">
+                        {% for error in form.title.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+            
+            {% endif %} {% endcomment %}
+
+            <form method="POST" class="form-auth">
+                {% csrf_token %}
+                <div class="form-control-group">
+                    {% render_field form.first_name class="form-control" placeholder="姓" %}
+                    {% render_field form.last_name class="form-control" placeholder="名" %}
+                </div>
+                <div class="form-control-group">
+                    {% render_field form.email class="form-control" placeholder="メールアドレス" %}
+                </div>
+                <div class="form-control-group">
+                    {% render_field form.password1 class="form-control" placeholder="パスワード" %}
+                </div>
+                <div class="form-control-group">
+                    {% render_field form.password2 class="form-control" placeholder="パスワード(確認)" %}
+                </div>
+
+                {% if form.errors %}
+                <ul class="error_message">
+                    {% for error in form.password1.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <div class="text-center">
+                    <button class="btn btn-primary" type="submit">登録</button>
+                </div>
+                {% comment %} {% render_field field class="form-control is-invalid" %} {% endcomment %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
