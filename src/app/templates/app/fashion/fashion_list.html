@@ -1,0 +1,105 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+{% block title %}ファッションリスト{% endblock %}
+<div class="wrapper">
+    <div class="title_box">
+        <h1>ファッションリスト</h1>
+        <p>スタッフやユーザーがカスタマイズしたコーデが表示されます。</p>
+    </div>
+    <div class="SELECTION_LIST">
+        <div class="search">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="field has-addons has-addons-centered ">
+                    <p class="control">
+                    <span class="select">
+                    <select name="search_id">
+                        <option value="all">全て</option>
+                        <option value="title">商品名</option>
+                        <option value="category">カテゴリー</option>
+                        <option value="brand">ブランド名</option>
+                    </select>
+                    </span>
+                    <span class="select">
+                    <select name="sex" class="select">
+                        <option value="free">性別なし</option>
+                        <option value="man">男性</option>
+                        <option value="woman">女性</option>
+                    </select>
+                    </span>
+                </p>
+                <p class="control">
+                    <input class="input" type="text" name="search" placeholder="検索したいワード……">
+                </p>
+                <p class="control">
+                    <button type="submit" class="button is-primary">検索する</button>
+                </p>
+                </div>
+            </form>
+        </div>
+        <div class="fashion_list">
+            {% for item in fashion_item_data %}
+                <div id="fashion_list_box">
+                    <div class="fashion_list_area" id="kisekae-area">
+                        <img class="base-img" src="{% static 'images/tenasi.png' %}" />
+                        {% for test in fashion_list_data %}
+                            {% if test.FSL_id == item.slug %}
+                                {% for est in item_data %}
+                                    {% if est.slug == test.using_item %}
+                                        <img class="{{ est.category }}" src="{{ est.image.url }}">
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="fashion_list_detail">
+                        <h1>{{ item.title|truncatechars:15 }}</h1>
+                        <h2>ジャンル: {{ item.clothing }}</h2>
+                        <h2>季節: {{ item.season }}</h2>
+                        <p>性別: {{ item.sex }} 向け</p>
+                        <p>作者ID: {{ item.user.user_screen_id }}</p>
+                        <p>説明: {{ item.description|truncatechars:15 }}</p>
+                        <div id="fashion_list_detail_box">
+                            <a href="{% url 'fashion_view' slug=item.slug %}" class="btn btn-primary"><i class="fas fa-shopping-cart"></i>詳しく見る。</a>
+                            
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="paginator">
+            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                {% if fashion_item_data.has_previous %}
+                <a class="pagination-previous" href="?p={{ fashion_item_data.previous_page_number }}">前のページへ</a>
+                {% endif %}
+                {% if fashion_item_data.has_next %}
+                <a class="pagination-next" href="?p={{ fashion_item_data.next_page_number }}">次のページへ</a>
+                {% endif %}
+                <ul class="pagination-list">
+                    {% if fashion_item_data.has_previous %}
+                    {% if fashion_item_data.previous_page_number != 1 %}
+                    <li><a class="pagination-link" href="?p=1">1</a></li>
+                    <li><span class="pagination-ellipsis">&hellip;</span></li>
+                    {% endif %}
+                    <li><a class="pagination-link"
+                            href="?p={{ fashion_item_data.previous_page_number }}">{{ fashion_item_data.previous_page_number }}</a></li>
+                    {% endif %}
+                    <li><a class="pagination-link is-current" href="?p={{ fashion_item_data.number }}">{{ fashion_item_data.number }}</a></li>
+                    {% if fashion_item_data.has_next %}
+                    <li><a class="pagination-link"
+                            href="?p={{ fashion_item_data.next_page_number }}">{{ fashion_item_data.next_page_number }}</a></li>
+                    {% if fashion_item_data.next_page_number != fashion_item_data.paginator.num_pages %}
+                    <li><span class="pagination-ellipsis">&hellip;</span></li>
+                    <li><a class="pagination-link"
+                            href="?p={{ fashion_item_data.paginator.num_pages }}">{{ fashion_item_data.paginator.num_pages }}</a></li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
