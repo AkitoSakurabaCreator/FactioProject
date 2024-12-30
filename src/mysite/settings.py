@@ -1,46 +1,29 @@
-import environ
-
-env = environ.Env()
-env.read_env('.env')
-
-SECRET_KEY = env('SECRET_KEY')
-
 import os
 from pathlib import Path
 
-from datetime import timedelta
+# SECRET_KEYを.envから取得
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = True
-# DEBUG = False # 本番ではTrueにしてください。
-TEMPLATE_DEBUG = DEBUG
+# DEBUGを.envから取得
+DEBUG = os.environ.get("DEBUG") == "True"
 
-ALLOWED_HOSTS = ['localhost'] # 任意のIP
+# ALLOWED_HOSTSを.envから取得
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# 静的ファイル配置先のディレクトリへのURL。http://ドメイン名:ポート名/static/フォルダ/ファイル名でアクセスできるようになる
-
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-if DEBUG:
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-else:
-    STATIC_ROOT = '/usr/share/nginx/html/static'
-    MEDIA_ROOT = '/usr/share/nginx/html/media'
-
-# 静的ファイルの配置先。この例では、STATIC_DIR(BASE_DIR/static)が設定される。
 STATICFILES_DIRS = [
-    #(STATIC_DIR),
-    ('account', STATIC_ROOT + '/accounts/'),
+    (STATIC_DIR),
+    ('account', STATIC_DIR + '/account/'),
     ('media', MEDIA_ROOT),
 ]
 
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -57,9 +40,10 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
-    'django.contrib.humanize', #カンマ
+    'django.contrib.humanize',
 
-    'bootstrap_datepicker_plus', #カレンダー 誕生日
+    'bootstrap_datepicker_plus',
+    'django_cleanup',
 ]
 
 MIDDLEWARE = [
@@ -70,8 +54,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'allauth.account.middleware.AccountMiddleware', #Django 5
 
-    'allauth.account.middleware.AccountMiddleware', #Django 5から
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -88,7 +73,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
-                ],
+                'django.template.context_processors.media',
+            ],
         },
     },
 ]
@@ -96,18 +82,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
+# MySQLのパラメータを.envから取得
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        # コンテナ内の環境変数をDATABASESのパラメータに反映
+        "NAME": os.environ.get("MYSQL_DATABASE"),
+        "USER": os.environ.get("MYSQL_USER"),
+        "PASSWORD": os.environ.get("MYSQL_PASSWORD"),
+        "HOST": "db",
+        "PORT": 3306,
+        "OPTIONS": {
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -124,10 +114,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
-
 LANGUAGE_CODE = 'ja'
 
 TIME_ZONE = 'Asia/Tokyo'
@@ -138,14 +124,6 @@ USE_I10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1
@@ -153,34 +131,15 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# --------------------------------------------
-AUTH_USER_MODEL = 'accounts.CustomUser' #元
+AUTH_USER_MODEL = 'accounts.CustomUser'  # 元
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 
 
+NUMBER_GROUPING = 3  # カンマ区切り
 
-NUMBER_GROUPING = 3 #カンマ区切り
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# メールをコンソールに表示する
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = True
-
-
-
-#自動ログアウト
-# デフォルトは二週間後
-#セッション時間
-#最後にアクセスしてからの測定
+# 最後にアクセスしてからの測定
 SESSION_SAVE_EVERY_REQUEST = True

@@ -3,8 +3,8 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from accounts.models import CustomUser #カスタムユーザー
 from django.urls import reverse
+from accounts.models import CustomUser #カスタムユーザー
 import os
 
 class Post(models.Model):
@@ -28,7 +28,6 @@ class Review(models.Model):
     like = models.IntegerField("評価", validators=[MinValueValidator(1), MaxValueValidator(5)], default=3)
     created = models.DateTimeField("作成日", default=timezone.now)
     bought = models.BooleanField("購入者", default=False)
-    # image = models.ForeignKey(CustomUser(author), )
     
     def __str__(self):
         return f'タイトル: {self.title} | 評価:{self.like} | 投稿者: {self.author.user_screen_id}'
@@ -81,6 +80,7 @@ class Item(models.Model):
     ('アイボリー', 'アイボリー'), ('オリーブ', 'オリーブ'),
     ]
     )
+    
     image = models.ImageField('イメージ画像', upload_to='products_images')
     upload_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True, verbose_name="担当者")
     
@@ -147,9 +147,8 @@ class Payment(models.Model):
         verbose_name_plural = "支払一覧"
 
 
-
-
 class FashionSaveList(models.Model):
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     title = models.CharField("タイトル", max_length=100)
@@ -158,11 +157,17 @@ class FashionSaveList(models.Model):
     season = models.CharField("季節", max_length=100, default='オールシーズン')
     color = models.CharField("ベースカラー", max_length=10, default='')
     brand = models.CharField("ブランド", max_length=100, blank=True, null=True)
+    # using_item = models.CharField(max_length=255, default="none")
+    # fashion_item = models.ForeignKey(FashionItemList, on_delete=models.CASCADE)
+    # fashion_item = models.OneToOneField(FashionItemList, on_delete=models.CASCADE)
     slug = models.IntegerField("固有ID")
     description = models.TextField("説明")
     author = models.IntegerField("作者アカウントID")
     sex = models.CharField("性別", max_length=2, default="自由")
     publish = models.BooleanField("公開", default=False)
+    
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+
     def __str__(self):
         return "ファッション名: " + self.title + " ユーザ名: " + self.user.user_screen_id
     
@@ -172,6 +177,7 @@ class FashionSaveList(models.Model):
 
 class FashionItemList(models.Model):
     FSL = models.ForeignKey(FashionSaveList, on_delete=models.CASCADE)
+    # connect_id = models.TextField(FSL.slug)
     using_item = models.CharField("使用アイテム", max_length=20)
     
     def __str__(self):

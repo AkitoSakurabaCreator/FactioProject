@@ -7,7 +7,6 @@ admin.site.register(Post)
 
 
 class QuestionAdmin(admin.ModelAdmin):
-    # list_display = ('complete')
     list_filter = [('upload_user__first_name'), 'category', 'brand']
     search_fields = ['upload_user', 'category', 'brand']
 

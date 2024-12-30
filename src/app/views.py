@@ -9,24 +9,19 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse  # 追加
 
 from accounts.models import CustomUser
 
 from django.db.models import Q
 
 from django.core.paginator import Paginator
-
-from django.http import JsonResponse
-
 class IndexView(View):
     def get(self, request, *args, **kwargs):
         search_data = ''
         sex_data = ''
         item_data = Item.objects.all()
-
-
         
-        # paginator = Paginator(item_data, 10) # 1ページに10件表示
         paginator = Paginator(item_data, 52) # 1ページに10件表示
         p = request.GET.get('p') # URLのパラメータから現在のページ番号を取得
         item_data = paginator.get_page(p) # 指定のページのArticleを取得
@@ -35,7 +30,6 @@ class IndexView(View):
         return render(request, 'app/store/index.html', {
             'item_data': item_data,
             'search_data': search_data,
-            # 'articles': articles
         })
 
     def post(self, request, *args, **kwargs):
@@ -47,7 +41,7 @@ class IndexView(View):
         print(Item.objects.filter(Q(sex=sex_data)).all())
 
         if search_id_data == 'title':
-            result = Item.objects.filter(Q(title__contains=search_data)).all()
+            result = Item.objects.filter(Q(title__contains=search_data)).all() # | Q(title=search_data) | Q(title__contains=search_data) | Q(brand__contains=search_data)
         elif search_id_data == 'category':
             result = Item.objects.filter(Q(category=search_data)).all()
             
@@ -212,7 +206,7 @@ class ReviewPost(View):
         bought = False
         if order:
             bought = True
-
+            
         if not(1 <= int(rate) <=5):
             raise ValueError('評価基準がおかしい。')
         form = PostReview(request.POST or None)
@@ -482,11 +476,13 @@ class FashionReviewList(View):
             FashionReview_Data = paginator.get_page(p)
 
             request.session['TempPage'] = request.build_absolute_uri()
-            
+
+            # fashion_item_data = FashionSaveList.objects.filter(Q(publish=True))
             fashion_list_data = FashionItemList.objects.filter(Q(FSL__publish=True))
         
             context={
                 'item_data': item_data,
+                # 'fashion_item_data': fashion_item_data,
                 'fashion_list_data': fashion_list_data,
                 'FashionReview_Data': FashionReview_Data
             }
@@ -546,9 +542,17 @@ class OrderView(LoginRequiredMixin, View):
             form = Coupon(request.POST or None)
             order = Order.objects.get(user=request.user, ordered=False)
             
+            # code = form.cleaned_data['couponcode']
+            # result = 0
+            # if form.valid():
+            #     if Coupon.objects.filter(Q(coupon_code=code)).exists():
+            #         result = Coupon.objects.filter(Q(coupon_code=code))
+            # else:
+            #     raise form.ValueError('正しいクーポンコードを入力してください。')
             context = {
                 'order': order,
                 'form': form,
+                # 'couponresult': result
             }
             return render(request, 'app/store/order.html', context)
         except ObjectDoesNotExist:
@@ -664,8 +668,9 @@ def send_email(order_items, user_data):
     msg=EmailMultiAlternatives(
             subject=mail_title, 
             body=text_content, 
-            from_email='任意のメールアドレス', 
+            from_email='factiohew@gmail.com', 
             to=[user_data.email],
+            # reply_to=[]
             )
     msg.attach_alternative(html_content,"text/html")
     msg.send()
@@ -693,6 +698,7 @@ class ReviewMenuView(LoginRequiredMixin, View):
 # お気に入りファッションコーデ一覧
 class FavoriteFashionView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
+# Using item:
         context = {}
         if request.method == 'GET':
             request.session['TempPage'] = request.build_absolute_uri()
@@ -710,6 +716,10 @@ class FavoriteFashionView(LoginRequiredMixin, View):
 
             fashion_list_data = FashionItemList.objects.filter().all()
             #↑要素があるものだけを取り出すという機能にできるならばするべき。
+
+            # paginator = Paginator(fashion_item_data, 20)
+            # p = request.GET.get('p')
+            # fashion_item_data = paginator.get_page(p)
             
             context={
                 'item_data': item_data,
@@ -755,6 +765,7 @@ class FavoriteItemListDelete(LoginRequiredMixin, View):
 
             if Favorite_Item_List.count() != 0:
                 Favorite_Item_List.delete()
+                # return redirect('product', slug)
                 return redirect(request.session['TempPage'])
             else:
                 return redirect(request.session['TempPage'])
@@ -766,6 +777,7 @@ class FavoriteItemListDelete(LoginRequiredMixin, View):
 # お気に入りアイテム一覧
 class FavoriteView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
+# Using item:
         context = {}
         if request.method == 'GET':
             item_data = Item.objects.all()
@@ -824,7 +836,6 @@ class FavoriteItemDeleteView(LoginRequiredMixin, View):
 
 def FavoriteItemAdd(request):
     slug = request.POST.get('slug')
-    # number2 = int(request.POST.get('number2'))
     Favorite_Item_List = FavoriteItemList.objects.filter(Q(user_id=request.user.id) & Q(favorite_item=slug)).all()
     if Favorite_Item_List.count() == 0:
         obj = FavoriteItemList(
@@ -857,7 +868,7 @@ class FavoriteItemView(LoginRequiredMixin, View):
 class ThanksView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'app/store/thanks.html')
-    
+
 
 class FashionCustomize(View):
     
@@ -1035,7 +1046,9 @@ class FashionSave(LoginRequiredMixin, View):
         context = {}
         if request.method == 'GET':
                 print(request.GET)
+                # slug = request.get["slug"]
                 slug = self.kwargs['slug']
+                # slug = 2
                 
                 item_data = Item.objects.all()
                 fashion_item_data = FashionSaveList.objects.get(slug=slug)
@@ -1054,6 +1067,7 @@ class FashionSave(LoginRequiredMixin, View):
         else:
                 response = redirect('Index')
                 return response
+
 
 class FashionView(View):
     def get_context_data(self, **kwargs):
@@ -1103,6 +1117,7 @@ class FashionView(View):
                 return response
 
 def like(request):
+    print ("aaa")
     article_pk = request.POST.get('article_pk')
     context = {
         'user_id': f'{ request.user }',
@@ -1126,15 +1141,18 @@ class FashionCustomizeEdit(View):
         if request.method == 'GET':
             user = request.user.id
             slug = self.kwargs['slug']
+            # FashionTempItem = request.session['FashionTempItem']
+
 
             item_data = Item.objects.all()
             fashion_item_data = FashionSaveList.objects.get(slug=slug)
             fashion_list_data = FashionItemList.objects.filter(FSL__slug=slug).all()
 
             brand_tag = ''
-            
             for split_value in fashion_list_data:
+                # if split_value.brand_tag.upper():
                 brand_tag += split_value.using_item + ','
+                
             context = {
                 'item_data': item_data,
                 'fashion_item_data': fashion_item_data,
@@ -1192,6 +1210,8 @@ class FashionCustomizeEdit(View):
 
                 obj.save()
 
+                
+                # List = FashionSaveList(slug=slug)
                 for save_value in FashionTempItem:
                     if save_value != '':
                         item_save = FashionItemList(
@@ -1300,6 +1320,7 @@ class FashionCustomizeDelete(View):
         FashionData.delete()
         return redirect('fashion_my_list')
 
+
 def like_for_post(request):
     item_pk = request.POST.get('item_pk')
     context = {
@@ -1318,3 +1339,19 @@ def like_for_post(request):
     context['like_for_post_count'] = post.likeforpost_set.count()
 
     return JsonResponse(context)
+
+
+
+
+#例外処理
+def error_400page(request, exception): # 以下追記箇所
+    return render(request, 'app/errors/404.html', status=400)
+
+def error_403page(request, exception): # 以下追記箇所
+    return render(request, 'app/errors/403.html', status=403)
+
+def error_404page(request, exception): # 以下追記箇所
+    return render(request, 'app/errors/404.html', status=404)
+
+def error_500page(request, exception): # 以下追記箇所
+    return render(request, 'app/errors/500.html', status=500)

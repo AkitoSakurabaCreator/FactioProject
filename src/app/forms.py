@@ -81,6 +81,10 @@ class FashionSaveForm(forms.Form):
         required=True,
         label='季節'
     )
+    # brand = forms.CharField(label='ブランド', max_length=255) #True消すの忘れずに！
+    
+        # publish = forms.BooleanField(initial=False)
+    # sex = forms.CharField(label='性別', max_length=5)
     sex = forms.fields.ChoiceField(
         choices=SexChoices.choices,
         required=True,

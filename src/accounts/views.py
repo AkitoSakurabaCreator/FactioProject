@@ -13,9 +13,8 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 
-import imghdr,hashlib
-
-# パスワードリセット機能
+from app .models import Item, OrderItem, Order, Payment #EC
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.urls import reverse_lazy
 
@@ -90,8 +89,6 @@ class ProfileEditView(LoginRequiredMixin, View):
             
             user_data.nick_name = form.cleaned_data['nick_name']
 
-            # user_screen_id_temp = form.cleaned_data['user_screen_id']
-            # user_data.user_screen_id = validate_unique(user_screen_id_temp)
             user_data.user_screen_id = validate_unique(form.cleaned_data['user_screen_id'])
             user_data.year = form.cleaned_data['year']
             user_data.zipcode = form.cleaned_data['zipcode']
@@ -99,7 +96,6 @@ class ProfileEditView(LoginRequiredMixin, View):
             user_data.buildingname = form.cleaned_data['buildingname']
             user_data.tel = form.cleaned_data['tel']
             user_data.job = form.cleaned_data['job']
-            # user_data.avatar = form.cleaned_data[request.FILES['avatar']]
             
             image_file_dict = self.request.FILES
             if image_file_dict:
@@ -140,24 +136,18 @@ class ManageView(LoginRequiredMixin, View):
         return render(request, 'accounts/manage.html')
 
 
-from app .models import Item, OrderItem, Order, Payment #EC
-from django.core.exceptions import ObjectDoesNotExist
 
 class HistoryView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        # item_data = Order.objects.filter(user=request.user.email).all() #id=request.user.id
         return render(request, "app/store/history.html", {
-            # 'order': item_data
         })
 
-class OrderHistoryView(LoginRequiredMixin, View):
-    # search_data = ''
 
+class OrderHistoryView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         if request.method == 'GET':
             try:
                 order = OrderItem.objects.order_by('ordered_date', 'id').reverse().filter(user_id=request.user.id).all()
-                # print(order)
                 user_data = CustomUser.objects.get(id=request.user.id)
 
                 paginator = Paginator(order, 10)
@@ -173,16 +163,11 @@ class OrderHistoryView(LoginRequiredMixin, View):
                 return redirect('management')
         
     def post(self, request, *args, **kwargs):
-        # print('POST')
         if request.method == 'POST':
-            # print('POST')
                 user_data = CustomUser.objects.get(id=request.user.id)
                 order = OrderItem.objects.order_by('ordered_date', 'id').reverse().filter(user_id=request.user.id).all()
                 search_data = request.POST['search_data']
-                print('search:' + search_data)
                 result = order.filter(Q(item__title__contains=search_data)).all()
-                # Q(title__contains=search_data)
-                # print("result: " + result)
                 
                 paginator = Paginator(result, 10)
                 p = request.POST.get('p')
@@ -193,9 +178,6 @@ class OrderHistoryView(LoginRequiredMixin, View):
                     'UserData': user_data,
                 }
                 return render(request, 'app/store/history.html', context)
-            # try:
-            # except:
-            #     return redirect('management')
         else:
                 return redirect('management')
 
@@ -275,8 +257,7 @@ def send_email(inquiry_data):
     msg.attach_alternative(html_content,"text/html")
     msg.send()
 
-
-
+# パスワードリセット機能
 class PasswordChange(LoginRequiredMixin, PasswordChangeView):
     """パスワード変更ビュー"""
     success_url = reverse_lazy('password_change_done')
