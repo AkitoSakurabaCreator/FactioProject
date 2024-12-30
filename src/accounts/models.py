@@ -8,8 +8,6 @@ from django.contrib.auth.models import UserManager, PermissionsMixin
 from django.utils import timezone
 
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
-
 
 class UserManager(UserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -39,7 +37,6 @@ class UserManager(UserManager):
 def create_id():
     return get_random_string(10)
 
-
 def _user_profile_avatar_upload_to(instance, filename):
     # name = picture(filename)
     current_time = datetime.now()
@@ -50,6 +47,7 @@ def _user_profile_avatar_upload_to(instance, filename):
     saved_path = 'Users/ProfileImages/'
     return '%s%s' % (saved_path, hs_filename)
 
+from django.core.exceptions import ValidationError
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('メールアドレス', unique=True, null=False)
     first_name = models.CharField("姓", max_length=30, null=False)

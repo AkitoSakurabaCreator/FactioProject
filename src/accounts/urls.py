@@ -17,8 +17,10 @@ urlpatterns =[
     path('profile/delete/<slug>', views.ProfileDeleteView.as_view(), name='profile_delete'),
     path('manage/', views.ManageView.as_view(), name='management'),
     path('history/', views.OrderHistoryView.as_view(), name='history'),
+
     path('inquiry/', views.InquiryView.as_view(), name='Inquiry'),
     path('inquiry/complete/', views.InquiryCompleteView.as_view(), name='Inquiry_complete'),
+    
     path('password_change/', views.PasswordChange.as_view(), name='password_change'),
     path('password_change/done/', views.PasswordChangeDone.as_view(), name='password_change_done'),
     path('password_reset/', views.PasswordReset.as_view(), name='password_reset'), #追加
