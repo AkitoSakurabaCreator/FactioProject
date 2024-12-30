@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile   # Dockerfileのファイル名
     
     # 作成するコンテナ名の指定
-    container_name: django-factioProject
+    container_name: django-factio
 
     # 使用するポートの設定
     ports:

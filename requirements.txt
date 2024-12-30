@@ -1,9 +1,12 @@
 dictknife==0.14.1
 Django==5.1.1
+django_cleanup
 django_allauth==65.3.0
 django-environ==0.11.2
+django-cleanup==9.0.0
 django-bootstrap-datepicker-plus==5.0.5
 django-widget-tweaks==1.5.0
 Pillow==11.0.0
 Requests==2.32.3
 mysqlclient==2.2.6
+gunicorn==23.0.0
