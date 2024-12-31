@@ -40,9 +40,10 @@ tags: ""
 
 
 ## デモ(図解)
-![Factio_Demo2.png](https://boostnote.io/api/teams/ZiDFKbzPj/files/6961a23674c2f79d2c2233c0c35ed3f9179c3d8d9cea3a77d21d2dbed35f9332-Factio_Demo2.png)
-![sidekick_GO5MtOqrPz.png](https://boostnote.io/api/teams/ZiDFKbzPj/files/71076c61fbceaa292946cff9cf9f19048c222a60a2ca66ae0d873177abbea345-sidekick_GO5MtOqrPz.png)
-
+<p align="center">
+  <img src="docs/Factio.png" alt="Factio: full app" width=810 />
+  <img src="docs/Factio2.png" alt="Factio: full app" width=810 />
+</p>
 
 ## 環境
 
